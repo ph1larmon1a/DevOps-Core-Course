@@ -13,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger("devops-info-service")
 
 HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", "5000"))
+PORT = int(os.getenv("PORT", "8000"))
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 app = Flask(__name__)
