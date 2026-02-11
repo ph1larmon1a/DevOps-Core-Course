@@ -41,13 +41,14 @@ jobs:
     - name: Run tests
       run: pytest app_python/tests --cov=app_python --cov-report=xml
 
-    - name: Run Snyk Security Scan
-      uses: snyk/actions/python@master
-      continue-on-error: true
+    - name: Install Snyk
+      run: npm install -g snyk
+
+    - name: Run Snyk (warn only)
+      run: snyk test --file=app_python/requirements.txt --severity-threshold=high
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --file=app_python/requirements.txt --severity-threshold=high
+      continue-on-error: true
 
     - name: Generate version (CalVer)
       run: echo "VERSION=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
