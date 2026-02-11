@@ -1,0 +1,10 @@
+.env
+
+.git/
+.gitignore
+
+.DS_Store
+
+tests/
+docs/
+*.md
