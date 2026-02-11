@@ -58,8 +58,7 @@ I used **CalVer** tags plus `latest`:
     This provides at least two tags per build: a versioned tag + latest.
 
 ### Link to successful workflow run:
-* GitHub Actions run: 
-### Terminal output / screenshot proof:
+* GitHub Actions run: https://github.com/ph1larmon1a/DevOps-Core-Course/actions/runs/21921286148
 
 ## 3. CI Best Practices, Security & Performance
 
@@ -67,8 +66,8 @@ I used **CalVer** tags plus `latest`:
 Dependency caching is enabled using `actions/setup-python` with pip caching.
 
 I compared workflow runtime before/after caching:
-* Before caching: 2m 10s
-* After caching: 1m 05s \
+* Before caching: 10s
+* After caching: 4s \
     This improvement occurs because pip packages are restored from cache instead of re-downloaded each run.
 
 ### CI best practices applied (at least 3) + why they matter:
@@ -80,4 +79,4 @@ I compared workflow runtime before/after caching:
 ### Snyk integration results and vulnerability handling:
 I integrated Snyk scanning to detect dependency vulnerabilities during CI using `SNYK_TOKEN` stored in GitHub Secrets.
 * Severity threshold: high (CI fails only for high/critical issues)
-* Result: 
+* Result: ![alt text](screenshots/lab03-snyk-result.png)
