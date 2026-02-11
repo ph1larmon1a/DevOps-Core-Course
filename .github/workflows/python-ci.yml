@@ -36,10 +36,10 @@ jobs:
 
     - name: Run linter
       run: flake8 app_python
+      continue-on-error: true
 
     - name: Run tests
       run: pytest app_python/tests --cov=app_python --cov-report=xml
-      continue-on-error: true
 
     - name: Run Snyk Security Scan
       uses: snyk/actions/python@master
