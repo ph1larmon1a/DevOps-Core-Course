@@ -43,12 +43,11 @@ jobs:
 
     - name: Run Snyk Security Scan
       uses: snyk/actions/python@master
-      working-directory: ./app_python
       continue-on-error: true
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --severity-threshold=high
+        args: --file=app_python/requirements.txt --severity-threshold=high
 
     - name: Generate version (CalVer)
       run: echo "VERSION=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
