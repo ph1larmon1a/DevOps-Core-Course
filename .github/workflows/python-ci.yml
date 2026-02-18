@@ -1,0 +1,69 @@
+name: Python CI/CD
+
+on:
+  push:
+    branches: [ "lab03" ]
+    paths:
+      - 'app_python/**'
+      - '.github/workflows/python-ci.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'app_python/**'
+
+concurrency:
+  group: python-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        pip install -r app_python/requirements.txt
+        pip install pytest pytest-cov flake8
+
+    - name: Run linter
+      run: flake8 app_python
+      continue-on-error: true
+
+    - name: Run tests
+      run: pytest app_python/tests --cov=app_python --cov-report=xml
+
+    - name: Install Snyk
+      run: npm install -g snyk
+
+    - name: Run Snyk (warn only)
+      run: snyk test --file=app_python/requirements.txt --severity-threshold=high
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
+
+    - name: Generate version (CalVer)
+      run: echo "VERSION=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v6
+      with:
+        context: ./app_python
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/devops-core-app-python:${{ env.VERSION }}
+          ${{ secrets.DOCKER_USERNAME }}/devops-core-app-python:latest
