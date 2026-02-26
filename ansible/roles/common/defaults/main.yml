@@ -1,0 +1,17 @@
+---
+# Essential packages present on most servers
+common_packages:
+  - ca-certificates
+  - curl
+  - git
+  - vim
+  - htop
+  - unzip
+  - jq
+  - python3-pip
+  - apt-transport-https
+  - gnupg
+  - lsb-release
+
+common_timezone: "Europe/Moscow"
+common_set_timezone: true
