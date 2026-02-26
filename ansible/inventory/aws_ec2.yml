@@ -1,0 +1,26 @@
+---
+plugin: amazon.aws.aws_ec2
+
+# Set region via env var AWS_REGION if you prefer, or edit this list.
+regions:
+  - "{{ lookup('env', 'AWS_REGION') | default('us-east-1', true) }}"
+
+# Only running instances
+filters:
+  instance-state-name: running
+
+# Compose connection vars
+compose:
+  ansible_host: public_ip_address
+  ansible_user: ubuntu
+
+# Group by tags and other metadata
+keyed_groups:
+  - key: tags.Name
+    prefix: name
+  - key: tags.Environment
+    prefix: env
+
+# Put everything in a convenient group
+groups:
+  webservers: true
