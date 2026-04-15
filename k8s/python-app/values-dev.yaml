@@ -1,0 +1,54 @@
+replicaCount: 1
+
+image:
+  tag: latest
+
+service:
+  type: NodePort
+  nodePort: 30080
+
+env:
+  - name: PORT
+    value: "8000"
+  - name: VISITS_FILE
+    value: /data/visits
+
+config:
+  env:
+    APP_ENV: development
+    LOG_LEVEL: DEBUG
+    FEATURE_VISITS_ENABLED: "true"
+    CONFIG_PATH: /config/config.json
+
+persistence:
+  enabled: true
+  size: 100Mi
+  storageClass: ""
+
+secrets:
+  data:
+    username: dev-user
+    password: dev-password
+
+vault:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+readinessProbe:
+  initialDelaySeconds: 3
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 15
+  timeoutSeconds: 2
+  failureThreshold: 3
