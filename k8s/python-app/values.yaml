@@ -1,0 +1,135 @@
+replicaCount: 3
+
+nameOverride: ""
+fullnameOverride: ""
+
+revisionHistoryLimit: 10
+
+rollout:
+  strategy: canary
+  canary:
+    maxSurge: 1
+    maxUnavailable: 0
+    steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 40
+      - pause:
+          duration: 30s
+      - setWeight: 60
+      - pause:
+          duration: 30s
+      - setWeight: 80
+      - pause:
+          duration: 30s
+      - setWeight: 100
+  blueGreen:
+    autoPromotionEnabled: false
+    autoPromotionSeconds: null
+    scaleDownDelaySeconds: 30
+    previewServiceSuffix: preview
+    previewService:
+      type: ClusterIP
+
+image:
+  repository: s1mphonia/devops-core-course-python-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: http
+  containerPort: 8000
+  nodePort: 30080
+
+env:
+  - name: PORT
+    value: "8000"
+  - name: VISITS_FILE
+    value: /data/visits
+
+config:
+  mountPath: /config
+  env:
+    APP_ENV: production
+    LOG_LEVEL: INFO
+    FEATURE_VISITS_ENABLED: "true"
+    CONFIG_PATH: /config/config.json
+
+persistence:
+  enabled: true
+  mountPath: /data
+  accessMode: ReadWriteOnce
+  size: 100Mi
+  storageClass: ""
+
+podSecurityContext:
+  fsGroup: 1000
+
+containerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+serviceAccount:
+  create: true
+  name: ""
+
+secrets:
+  enabled: true
+  name: ""
+  data:
+    username: change-me
+    password: change-me
+
+vault:
+  enabled: false
+  role: python-app
+  secretPath: secret/data/python-app/config
+  injectFileName: config
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+hooks:
+  enabled: true
+  image:
+    repository: busybox
+    tag: "1.36.1"
+    pullPolicy: IfNotPresent
+  preInstall:
+    weight: -5
+    command:
+      - sh
+      - -c
+      - echo "Validating python-app release before install" && sleep 10 && echo "Pre-install validation complete"
+  postInstall:
+    weight: 5
+    command:
+      - sh
+      - -c
+      - echo "Running python-app smoke test" && sleep 10 && echo "Post-install smoke test complete"
