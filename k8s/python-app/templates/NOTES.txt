@@ -1,0 +1,23 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Release name: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+The service is exposed as:
+  {{ include "python-app.fullname" . }} on port {{ .Values.service.port }}
+
+To inspect the rendered manifests:
+  helm get manifest {{ .Release.Name }}
+
+To inspect the applied values:
+  helm get values {{ .Release.Name }}
+
+{{- if .Values.secrets.enabled }}
+To inspect the managed Secret metadata:
+  kubectl get secret {{ include "python-app.secretName" . }} -o yaml
+{{- end }}
+
+{{- if .Values.vault.enabled }}
+Vault Agent injection is enabled.
+Injected files will be available under /vault/secrets/{{ .Values.vault.injectFileName }}
+{{- end }}
