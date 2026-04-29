@@ -1,0 +1,12 @@
+---
+# Application configuration
+app_name: devops-core-app-python
+docker_image: "s1mphonia/devops-core-app-python"
+docker_image_tag: "latest"
+
+app_port: 5000
+app_container_name: "{{ app_name }}"
+app_restart_policy: unless-stopped
+
+# Optional environment variables passed into container
+app_env: {}
